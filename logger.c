@@ -114,3 +114,4 @@ int main(int argc, char **argv) {
     if (fd_freq >= 0) close(fd_freq);
     if (fd_util >= 0) close(fd_util);
     return 0;
+}
