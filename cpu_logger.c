@@ -22,7 +22,6 @@
 typedef struct {
     int cpu_num;
     char freq_path[256];
-    char governor_path[256];
 } cpu_info_t;
 
 typedef struct {
@@ -96,8 +95,6 @@ static void scan_cpus() {
             cpus[num_cpus].cpu_num = cpu_num;
             snprintf(cpus[num_cpus].freq_path, sizeof(cpus[num_cpus].freq_path),
                      "%s/%s/cpufreq/scaling_cur_freq", CPU_DIR, entry->d_name);
-            snprintf(cpus[num_cpus].governor_path, sizeof(cpus[num_cpus].governor_path),
-                     "%s/%s/cpufreq/scaling_governor", CPU_DIR, entry->d_name);
             num_cpus++;
         }
     }
@@ -188,11 +185,6 @@ int main(int argc, char **argv) {
         fprintf(out, ",cpu%d_freq_khz", cpus[i].cpu_num);
     }
     
-    // CPU governor columns
-    for (int i = 0; i < num_cpus; i++) {
-        fprintf(out, ",cpu%d_governor", cpus[i].cpu_num);
-    }
-    
     // Thermal zone columns
     for (int i = 0; i < num_thermal_zones; i++) {
         fprintf(out, ",%s_mC", thermal_zones[i].type_name);
@@ -203,7 +195,6 @@ int main(int argc, char **argv) {
     struct timespec next;
     clock_gettime(CLOCK_MONOTONIC, &next);
 
-    char governor_buf[32];
     for (long sample = 1; sample <= seconds; ++sample) {
         fprintf(out, "%ld", sample);
         
@@ -211,15 +202,6 @@ int main(int argc, char **argv) {
         for (int i = 0; i < num_cpus; i++) {
             int freq = read_int_file(cpus[i].freq_path);
             fprintf(out, ",%d", freq);
-        }
-        
-        // CPU governors
-        for (int i = 0; i < num_cpus; i++) {
-            if (read_string_file(cpus[i].governor_path, governor_buf, sizeof(governor_buf)) == 0) {
-                fprintf(out, ",%s", governor_buf);
-            } else {
-                fprintf(out, ",unknown");
-            }
         }
         
         // Thermal zones
