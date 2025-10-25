@@ -4,6 +4,13 @@
 #include <time.h>
 #include <sys/types.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+
 #define TEMP_PATH "/sys/class/kgsl/kgsl-3d0/temp"                // usually millidegree C
 #define FREQ_PATH "/sys/class/kgsl/kgsl-3d0/clock_mhz"           // MHz (int)
 #define UTIL_PATH "/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage" // 0..100 (int)
